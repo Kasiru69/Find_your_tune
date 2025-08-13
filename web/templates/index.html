@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}}</title>
+    <link rel="stylesheet" href="/static/css/style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1><i class="fas fa-music"></i> Audio Recognition System</h1>
+            <p>Identify songs using advanced audio fingerprinting</p>
+        </header>
+
+        <div class="stats">
+            <div class="stat-card">
+                <i class="fas fa-database"></i>
+                <h3>{{.SongCount}}</h3>
+                <p>Songs in Database</p>
+            </div>
+        </div>
+
+        <div class="main-actions">
+            <div class="action-card" id="record-card">
+                <i class="fas fa-microphone"></i>
+                <h3>Record & Identify</h3>
+                <p>Record audio from your speakers to identify any song</p>
+                <button class="btn btn-primary" id="start-recording">
+                    <i class="fas fa-play"></i> Start Recording
+                </button>
+            </div>
+
+            <div class="action-card">
+                <i class="fas fa-plus"></i>
+                <h3>Add New Song</h3>
+                <p>Add a new song to the recognition database</p>
+                <button class="btn btn-secondary" onclick="showAddSongModal()">
+                    <i class="fas fa-plus"></i> Add Song
+                </button>
+            </div>
+
+            <div class="action-card">
+                <i class="fas fa-list"></i>
+                <h3>Browse Database</h3>
+                <p>View all songs in the recognition database</p>
+                <a href="/database" class="btn btn-secondary">
+                    <i class="fas fa-eye"></i> View Database
+                </a>
+            </div>
+        </div>
+
+        <div class="recording-status" id="recording-status" style="display: none;">
+            <div class="status-content">
+                <div class="recording-animation">
+                    <div class="pulse"></div>
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h3 id="status-title">Preparing to Record...</h3>
+                <p id="status-message">Get ready to play your song</p>
+                <div class="countdown" id="countdown" style="display: none;">
+                    <span id="countdown-number">3</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="results" id="results" style="display: none;">
+            <div class="result-content">
+                <div class="result-icon">
+                    <i class="fas fa-check-circle" id="result-icon"></i>
+                </div>
+                <h3 id="result-title">Song Identified!</h3>
+                <div class="song-info">
+                    <h4 id="song-title">Shape of You</h4>
+                    <p id="song-artist">Ed Sheeran</p>
+                    <p id="song-album">÷ (Divide)</p>
+                </div>
+                <div class="confidence">
+                    <div class="confidence-bar">
+                        <div class="confidence-fill" id="confidence-fill"></div>
+                    </div>
+                    <p><span id="confidence-percent">67.3</span>% Confidence</p>
+                </div>
+                <button class="btn btn-primary" onclick="resetApp()">
+                    <i class="fas fa-redo"></i> Record Another
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal" id="add-song-modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeAddSongModal()">&times;</span>
+            <h2><i class="fas fa-plus"></i> Add New Song</h2>
+            <form id="add-song-form">
+                <div class="form-group">
+                    <label for="artist">Artist *</label>
+                    <input type="text" id="artist" name="artist" required>
+                </div>
+                <div class="form-group">
+                    <label for="title">Song Title *</label>
+                    <input type="text" id="title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="album">Album (Optional)</label>
+                    <input type="text" id="album" name="album">
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeAddSongModal()">Cancel</button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-plus"></i> Add Song
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script src="/static/js/app.js"></script>
+</body>
+</html>

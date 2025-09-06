@@ -45,7 +45,7 @@ func SlideHamming(reference, query *audio.AudioFingerprint) *database.MatchResul
 		conf := float64(matches) / float64(len(qry))
 		if conf > best.Confidence {
 			best = &database.MatchResult{
-				IsMatch:     conf >= 0.35,
+				IsMatch:     conf >= 0.25,
 				Confidence:  conf,
 				MatchOffset: offset,
 			}

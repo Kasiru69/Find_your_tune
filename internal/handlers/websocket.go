@@ -73,7 +73,10 @@ func (h *Handler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 	client := &Client{
 		conn: conn,
 		send: make(chan []byte, 256),
+		hub:  h.hub,
 	}
+
+	h.hub.register <- client
 
 	go client.writePump()
 	go client.readPump()
@@ -81,6 +84,7 @@ func (h *Handler) WebSocketHandler(w http.ResponseWriter, r *http.Request) {
 
 func (c *Client) readPump() {
 	defer func() {
+		c.hub.unregister <- c
 		c.conn.Close()
 	}()
 
@@ -119,9 +123,11 @@ func (h *Handler) broadcastWebSocketMessage(msgType string, payload interface{})
 		Payload: payload,
 	}
 
-	_, err := json.Marshal(msg)
+	data, err := json.Marshal(msg)
 	if err != nil {
 		log.Printf("Error marshaling WebSocket message: %v", err)
 		return
 	}
+
+	h.hub.broadcast <- data
 }

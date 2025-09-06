@@ -27,6 +27,24 @@ class AudioRecognitionApp {
         }
     }
 
+    setButtonLoading(btn, isLoading, loadingText = 'Buffering...') {
+        if (!btn) return;
+        if (isLoading) {
+            if (!btn.dataset.originalHtml) {
+                btn.dataset.originalHtml = btn.innerHTML;
+            }
+            btn.disabled = true;
+            btn.classList.add('is-loading');
+            btn.innerHTML = `<i class="fas fa-spinner fa-spin"></i> ${loadingText}`;
+        } else {
+            if (btn.dataset.originalHtml) {
+                btn.innerHTML = btn.dataset.originalHtml;
+            }
+            btn.disabled = false;
+            btn.classList.remove('is-loading');
+        }
+    }
+
     connectWebSocket() {
         const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
         const wsUrl = `${protocol}//${window.location.host}/ws`;
@@ -52,6 +70,12 @@ class AudioRecognitionApp {
         switch (data.type) {
             case 'recording_status':
                 this.updateRecordingStatus(data.payload);
+                break;
+            case 'early_guess':
+                const eg = document.getElementById('early-guess');
+                if (eg && data.payload && data.payload.name) {
+                    eg.textContent = data.payload.name;
+                }
                 break;
             case 'result':
                 this.showResult(data.payload);
@@ -151,6 +175,7 @@ class AudioRecognitionApp {
         if (result.is_match && result.song) {
             this.displaySuccessResult(result);
         } else {
+            //this.displaySuccessResult(result);
             this.displayNoMatchResult(result);
         }
         
@@ -231,37 +256,46 @@ class AudioRecognitionApp {
     }
 
     async addSong() {
-        const formData = new FormData(document.getElementById('add-song-form'));
+        const form = document.getElementById('add-song-form');
+        if (!form) return;
+
+        const submitBtn = form.querySelector('button[type="submit"]');
+        const formControls = form.querySelectorAll('input, button');
+
+        const formData = new FormData(form);
         const songData = {
             artist: formData.get('artist'),
             title: formData.get('title'),
             album: formData.get('album')
         };
-        
+
+        this.setButtonLoading(submitBtn, true, 'Buffering...');
+        formControls.forEach(el => el.disabled = true);
+
         try {
             const response = await fetch('/api/songs/add', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
+                headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(songData)
             });
-            
+
             if (!response.ok) {
                 throw new Error('Failed to add song');
             }
-            
+
             const result = await response.json();
             console.log('Song added:', result);
-            
+
             this.closeAddSongModal();
             this.showNotification('Song added successfully!', 'success');
-            
+
             setTimeout(() => window.location.reload(), 1500);
-            
         } catch (error) {
             console.error('Add song error:', error);
             this.showNotification('Failed to add song', 'error');
+        } finally {
+            this.setButtonLoading(submitBtn, false);
+            formControls.forEach(el => el.disabled = false);
         }
     }
 

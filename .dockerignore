@@ -1,0 +1,15 @@
+# .dockerignore
+.git
+.gitignore
+Dockerfile*
+docker-compose.yml
+data
+*.db
+*.mp4
+*.wav
+*.log
+node_modules
+web/static/node_modules
+dist
+build
+tmp

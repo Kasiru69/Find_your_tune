@@ -13,6 +13,7 @@ type Handler struct {
 	db        *database.DB
 	config    *config.Config
 	templates map[string]*template.Template
+	hub       *Hub
 }
 
 func New(db *database.DB, cfg *config.Config) *Handler {
@@ -21,6 +22,9 @@ func New(db *database.DB, cfg *config.Config) *Handler {
 		config:    cfg,
 		templates: make(map[string]*template.Template),
 	}
+
+	h.hub = NewHub()
+	go h.hub.run()
 
 	h.loadTemplates()
 	return h

@@ -1,0 +1,21 @@
+# docker-compose.yml
+version: "3.9"
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: audio-recognition:latest
+    ports:
+      - "8080:8080"
+    environment:
+      - PORT=8080
+      - DATABASE_PATH=/app/data/songs.db
+      - TEMP_DIR=/app/data/temp
+      # Spotify creds only if using track-metadata helpers (remove hardcoded constants before prod)
+      # - SPOTIFY_CLIENT_ID=xxxx
+      # - SPOTIFY_CLIENT_SECRET=yyyy
+    volumes:
+      - ./data:/app/data
+    # Note: screen/system-audio recording generally won't work inside a generic container.
+    # See the section below for Linux-only advanced device/display mappings if you must try it.
